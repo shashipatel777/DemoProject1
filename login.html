@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Error Logger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .error-banner {
+            background-color: #ffe6e6;
+            color: #cc0000;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+            border: 1px solid #ffcccc;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0052a3;
+        }
+        .log-container {
+            background-color: #222;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .log-container h3 {
+            margin-top: 0;
+            color: #fff;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            font-size: 13px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Form Section -->
+    <div class="login-container">
+        <h2>Account Login</h2>
+        <div id="errorBanner" class="error-banner"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+    <!-- Application Log View Section -->
+    <div class="log-container">
+        <h3>System Activity Log</h3>
+        <div id="logTerminal">
+            <div class="log-entry">[INFO] Logger initialized. Waiting for actions...</div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorBanner = document.getElementById('errorBanner');
+        const logTerminal = document.getElementById('logTerminal');
+
+        // Function to create and append error entries to the on-screen log window
+        function writeToLog(level, message) {
+            const timestamp = new Date().toISOString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${timestamp}] [${level}] ${message}`;
+            
+            // Append log entry to the terminal component
+            logTerminal.appendChild(logEntry);
+            
+            // Keep console.log synchronized for standard browser developer tool visibility
+            console.error(`[${level}] ${message}`);
+        }
+
+        // Form Submit Handler
+        loginForm.addEventListener('submit', function(event) {
+            // Stop the standard form refresh submission behavior
+            event.preventDefault(); 
+            
+            // Reset visual error state
+            errorBanner.style.display = 'none';
+            errorBanner.textContent = '';
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            // 1. Validation for Empty Form Fields
+            if (!username || !password) {
+                const missingField = !username ? 'Username' : 'Password';
+                const errorMsg = `Login failure: Missing required field (${missingField}).`;
+                
+                // Update UI error message banner
+                errorBanner.textContent = "Please fill out all input fields.";
+                errorBanner.style.display = 'block';
+                
+                // Add tracking entry to structural log container
+                writeToLog('ERROR_VALIDATION', errorMsg);
+                return;
+            }
+
+            // 2. Mock Mock authentication credentials lookup evaluation matching
+            // Hardcoded parameters for demonstration purposes: admin / Password123
+            if (username === 'admin' && password === 'Password123') {
+                writeToLog('INFO', `User "${username}" successfully authorized.`);
+                alert('Authentication Successful!');
+                // Optional: window.location.href = "/dashboard";
+            } else {
+                // 3. Failure scenario management for invalid credential keys
+                const errorMsg = `Failed authentication attempt for identity: "${username}". Invalid credentials provided.`;
+                
+                errorBanner.textContent = "Invalid username or password.";
+                errorBanner.style.display = 'block';
+                
+                // Write transaction issue straight to application layout log history
+                writeToLog('ERROR_AUTH', errorMsg);
+            }
+        });
+    </script>
+</body>
+</html>
