@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form with Error Logging</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .error-message {
+            color: #d9534f;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success-message {
+            color: #28a745;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Create Account</h2>
+    <form id="registrationForm" novalidate>
+        <!-- Username Field -->
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+            <div class="error-message" id="usernameError"></div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter email address">
+            <div class="error-message" id="emailError"></div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Min 6 characters">
+            <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+    <div class="success-message" id="successMsg">Registration successful! Check console logs.</div>
+</div>
+
+<script>
+document.getElementById('registrationForm').addEventListener('submit', function(event) {
+    // Prevent the page from refreshing on form submission
+    event.preventDefault();
+
+    // Clear previous visual UI errors
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(el => { el.style.display = 'none'; el.innerText = ''; });
+    document.getElementById('successMsg').style.style = 'none';
+
+    // Fetch form inputs
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    let hasErrors = false;
+    let logPayload = {
+        timestamp: new Date().toISOString(),
+        errors: []
+    };
+
+    // 1. Validate Username
+    if (username === "") {
+        const errorText = "Username field cannot be left blank.";
+        showError('usernameError', errorText);
+        logPayload.errors.push({ field: "username", reason: errorText });
+        hasErrors = true;
+    } else if (username.length < 3) {
+        const errorText = "Username must be at least 3 characters long.";
+        showError('usernameError', errorText);
+        logPayload.errors.push({ field: "username", reason: errorText });
+        hasErrors = true;
+    }
+
+    // 2. Validate Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email === "") {
+        const errorText = "Email address is required.";
+        showError('emailError', errorText);
+        logPayload.errors.push({ field: "email", reason: errorText });
+        hasErrors = true;
+    } else if (!emailRegex.test(email)) {
+        const errorText = "Please enter a valid email syntax (e.g., name@domain.com).";
+        showError('emailError', errorText);
+        logPayload.errors.push({ field: "email", reason: errorText });
+        hasErrors = true;
+    }
+
+    // 3. Validate Password
+    if (password === "") {
+        const errorText = "Password field cannot be left blank.";
+        showError('passwordError', errorText);
+        logPayload.errors.push({ field: "password", reason: errorText });
+        hasErrors = true;
+    } else if (password.length < 6) {
+        const errorText = "Password security standard requires at least 6 characters.";
+        showError('passwordError', errorText);
+        logPayload.errors.push({ field: "password", reason: errorText });
+        hasErrors = true;
+    }
+
+    // Execution step based on validation state
+    if (hasErrors) {
+        // Output the bundled errors natively into the developer tools console log
+        console.error("🔥 [Registration Failure Log Saved]:", logPayload);
+    } else {
+        console.log("✅ [Registration Success Log Saved]: User registered successfully at", logPayload.timestamp);
+        document.getElementById('successMsg').style.display = 'block';
+        document.getElementById('registrationForm').reset();
+    }
+});
+
+// Helper function to handle UI text visibility
+function showError(elementId, message) {
+    const el = document.getElementById(elementId);
+    el.innerText = message;
+    el.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
