@@ -1,7 +1,67 @@
+<!DOCTYPE html>
 <html>
+<head>
+    <title>Error Demo Page</title>
+
+    <script>
+        // ❌ JavaScript ERROR 1: undefined function call
+        function triggerError() {
+            console.log("About to cause error...");
+
+            // This function does NOT exist → ReferenceError
+            notExistingFunction();
+
+            console.log("This will never run");
+        }
+
+        // ❌ JavaScript ERROR 2: undefined variable
+        function triggerSecondError() {
+            console.log(x); // x is not defined → ReferenceError
+        }
+
+        // ❌ Unhandled Promise error
+        function triggerPromiseError() {
+            return new Promise((resolve, reject) => {
+                reject("Promise failed intentionally");
+            });
+        }
+
+        triggerPromiseError(); // unhandled rejection
+    </script>
+</head>
+
 <body>
-<div>
-<p>Hello
-</div>
+
+    <!-- ❌ HTML ERROR: malformed structure -->
+    <h1>Broken HTML Example
+
+    <!-- missing closing tag above -->
+
+    <p>This page contains intentional errors for testing.</p>
+
+    <!-- ❌ Wrong nesting (invalid HTML) -->
+    <div>
+        <span>
+        <p>Invalid nesting example
+    </div>
+    </span>
+
+    <!-- Button triggers JS errors -->
+    <button onclick="triggerError()">Trigger JS Error 1</button>
+    <button onclick="triggerSecondError()">Trigger JS Error 2</button>
+
+    <!-- ❌ Broken image path -->
+    <img src="missing-image.png" alt="Broken Image Test">
+
+    <!-- ❌ Inline script error -->
+    <script>
+        console.log("Page loaded");
+
+        // syntax-style runtime error
+        setTimeout(() => {
+            console.log(nonDefinedVariable);
+        }, 2000);
+    </script>
+
 </body>
 </html>
